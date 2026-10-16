@@ -52,7 +52,7 @@ Gold - analytical aggregates / marts
 - `tests/test_data_quality.py`
 - `docs/performance-notes.md`
 
-## Senior-level design considerations
+## Design considerations
 
 ### Incremental processing
 A watermark or ingestion date is used to identify the new batch. Only changed data is transformed and merged into the target.

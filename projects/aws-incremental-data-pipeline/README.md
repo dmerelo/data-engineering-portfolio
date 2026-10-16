@@ -9,7 +9,7 @@ It is inspired by a real production problem I worked on, but it does **not** con
 The project demonstrates the engineering decisions behind a production case in which a daily full-load pattern was replaced by incremental processing.
 
 In the real environment that inspired this project:
-- processing windows were approximately **4–6 hours** before the architectural change;
+- processing windows were approximately **4–6 hours, reaching up to 8 hours at peak**, before the architectural change;
 - the platform supported about **20 production pipelines** and processed millions of records;
 - the move to incremental processing produced an observed reduction of approximately **60% in AWS resource consumption**, measured through before/after comparison of processing time, resource usage and cloud cost.
 
@@ -33,7 +33,7 @@ Typical consequences:
 flowchart LR
     A[Source Systems] --> B[S3 Raw / Landing]
     B --> C[Incremental Detection / Watermark]
-    C --> D[Glue / Python / SQL Processing]
+    C --> D[Glue PySpark / Python / SQL Processing]
     D --> E{Data Quality}
     E -->|Pass| F[S3 Curated / Analytical Store]
     E -->|Reject| G[Quarantine / Error Records]
@@ -49,10 +49,10 @@ flowchart LR
 | --- | --- |
 | Raw and curated storage | Amazon S3 |
 | Catalog / metadata | AWS Glue Data Catalog |
-| Batch transformation | AWS Glue, Python, SQL |
+| Batch transformation | AWS Glue (PySpark), Python, SQL |
 | Analytical SQL over lake | Amazon Athena |
 | Relational serving when appropriate | Amazon Aurora PostgreSQL |
-| Scheduling / event triggers | EventBridge / orchestration layer |
+| Orchestration / scheduling | Apache Airflow, AWS Step Functions, EventBridge |
 | Logs, metrics and alarms | Amazon CloudWatch |
 | Credentials | AWS Secrets Manager |
 | Access control | AWS IAM |
@@ -239,7 +239,7 @@ aws-incremental-data-pipeline/
     └── test_incremental_pipeline.py
 ```
 
-## Senior-level trade-offs
+## Design trade-offs
 
 ### Full load may still be better when
 - the dataset is small;
@@ -279,6 +279,6 @@ It requires explicit decisions about:
 
 ## What this project demonstrates
 
-This project is designed to demonstrate Senior Data Engineering reasoning around:
+This project is designed to demonstrate Data Engineering reasoning around:
 
 `AWS` · `incremental processing` · `watermarks` · `idempotency` · `partitioning` · `data quality` · `observability` · `reprocessing` · `performance` · `cloud cost` · `failure recovery` · `trade-offs`

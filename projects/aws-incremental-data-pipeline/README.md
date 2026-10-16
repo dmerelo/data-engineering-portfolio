@@ -241,6 +241,30 @@ airflow dags test incremental_customers 2026-10-16
 
 The DAG reads `incremental_batch.csv` from that folder and writes `curated/customers.csv` and `state/watermark.json`. Copy the generated CSVs there first (`full_snapshot.csv` goes to `curated/customers.csv`).
 
+## PySpark job (Glue style)
+
+[`glue/incremental_partition_job.py`](./glue/incremental_partition_job.py) is a sanitized PySpark recreation of the pattern used in production to replace the daily full reload: process only the **date partitions** that are new, instead of rereading the whole history.
+
+```text
+choose partitions -> read only those partitions -> deduplicate -> validate -> overwrite only those partitions
+```
+
+- **Partition selection:** a normal run takes every `dt` newer than the last committed one; a reprocessing run takes exactly the dates requested.
+- **Partition pruning:** the read filters on `dt`, so Spark only opens the selected folders.
+- **Deduplication:** `row_number()` over `(dt, event_id)` ordered by `updated_at` keeps the latest version of each record.
+- **Blocking checks:** null keys or remaining duplicates stop the job before anything is written.
+- **Idempotent writes:** dynamic partition overwrite replaces only the processed days, so rerunning a day gives the same result and leaves other days untouched.
+- **Runs in both places:** plain PySpark locally, AWS Glue in the cloud (uses `getResolvedOptions` when `awsglue` is available).
+
+The orchestrator commits the new `last_committed_dt` only after the job succeeds, the same rule as the watermark in the DAG above.
+
+Tests in [`tests/test_partition_job.py`](./tests/test_partition_job.py) run on a local SparkSession and cover partition selection, deduplication, idempotent reprocessing of one day, an empty run and a blocked write on null keys.
+
+```bash
+python projects/aws-incremental-data-pipeline/glue/incremental_partition_job.py \
+  --source_path /tmp/raw --target_path /tmp/curated --last_committed_dt 2026-09-05
+```
+
 ## Reprocessing and operations
 
 A resilient pipeline must support reprocessing one logical batch without rebuilding all history.
@@ -268,6 +292,8 @@ aws-incremental-data-pipeline/
 ├── data/                         # generated synthetic data
 ├── dags/
 │   └── incremental_customers_dag.py
+├── glue/
+│   └── incremental_partition_job.py
 ├── docs/
 │   ├── before-after.md
 │   └── operations-runbook.md
@@ -280,7 +306,8 @@ aws-incremental-data-pipeline/
 └── tests/
     ├── test_dag_integrity.py
     ├── test_incremental_pipeline.py
-    └── test_orchestration.py
+    ├── test_orchestration.py
+    └── test_partition_job.py
 ```
 
 ## Design trade-offs
@@ -320,6 +347,7 @@ It requires explicit decisions about:
 - [`src/incremental_pipeline.py`](./src/incremental_pipeline.py) — executable incremental processing example
 - [`src/orchestration.py`](./src/orchestration.py) — task logic used by the DAG (watermark state, staging, quality gate, publish)
 - [`dags/incremental_customers_dag.py`](./dags/incremental_customers_dag.py) — Airflow DAG
+- [`glue/incremental_partition_job.py`](./glue/incremental_partition_job.py) — PySpark job (Glue style) for incremental processing by date partition
 - [`tests/test_orchestration.py`](./tests/test_orchestration.py) — failure, retry and replay behavior of the DAG steps
 - [`tests/test_incremental_pipeline.py`](./tests/test_incremental_pipeline.py) — tests for selection, deduplication, idempotency and watermark behavior
 - [`sql/incremental_upsert.sql`](./sql/incremental_upsert.sql) — SQL merge/upsert reference
@@ -328,4 +356,4 @@ It requires explicit decisions about:
 
 This project is designed to demonstrate Data Engineering reasoning around:
 
-`AWS` · `Airflow` · `incremental processing` · `watermarks` · `idempotency` · `partitioning` · `data quality` · `observability` · `reprocessing` · `performance` · `cloud cost` · `failure recovery` · `trade-offs`
+`AWS` · `Airflow` · `PySpark` · `incremental processing` · `watermarks` · `idempotency` · `partitioning` · `data quality` · `observability` · `reprocessing` · `performance` · `cloud cost` · `failure recovery` · `trade-offs`

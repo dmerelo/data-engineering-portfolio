@@ -4,13 +4,13 @@
 
 Portfolio focused on **Data Engineering, AWS, Python, SQL, ETL/ELT, data pipelines, performance and cloud architecture**.
 
-My strongest production experience is with **AWS, Python and SQL**. Projects involving Spark, Databricks, Snowflake, dbt and Azure are clearly identified as hands-on/reference labs rather than previous production experience.
+My strongest production experience is with **AWS, PySpark, Python, SQL and Airflow**. Projects involving Databricks, Snowflake, dbt and Azure are clearly identified as hands-on/reference labs rather than previous production experience.
 
 ## Selected professional impact
 
-- Contributed to the evolution of a national-scale telecom data platform from daily **full-load processing to incremental processing**.
+- Led the implementation of the V2 incremental-processing architecture for a national-scale telecom platform, replacing daily **full loads** that ran in **4–6 hour windows (up to 8 hours at peak)**.
 - Reduced reprocessing, execution time, AWS resource consumption and cloud cost by approximately **60%**.
-- Supported and evolved approximately **20 production data pipelines** in a critical environment processing millions of records.
+- Built and maintained approximately **20 production ETL/ELT pipelines** with AWS Glue (PySpark), Python and SQL, orchestrated with Airflow and Step Functions, in a critical environment processing millions of records.
 
 > Proprietary code, datasets and internal architecture are not exposed. Public examples are sanitized or recreated as reference architectures.
 
@@ -60,8 +60,9 @@ The flagship test suite covers incremental selection, deduplication, idempotent 
 
 ## Core production stack
 
-**AWS:** S3, Glue, Athena, Lambda, Aurora PostgreSQL, DynamoDB, ECS, EC2, API Gateway, EventBridge, CloudWatch, IAM, Secrets Manager  
-**Languages:** Python, SQL, Shell Script  
+**AWS:** Glue (PySpark), Redshift, Athena, S3, Lambda, Step Functions, EventBridge, ECS, EC2, API Gateway, CloudWatch, IAM, Secrets Manager, DynamoDB, Aurora PostgreSQL  
+**Orchestration:** Apache Airflow, AWS Step Functions  
+**Languages:** Python, PySpark, SQL, Shell Script  
 **Databases:** PostgreSQL, Aurora PostgreSQL, Oracle, SQL Server, MySQL, DynamoDB  
 **Engineering:** ETL/ELT, Data Pipelines, Data Modeling, REST APIs, Docker, Git, CI/CD, monitoring and troubleshooting
 
@@ -82,7 +83,7 @@ The flagship test suite covers incremental selection, deduplication, idempotent 
 
 Current practical study focuses on:
 
-`Advanced SQL` · `Redshift` · `AWS DMS / CDC` · `Spark / PySpark` · `Databricks / Delta Lake` · `Snowflake` · `dbt` · `Azure Data Engineering`
+`Advanced SQL` · `AWS DMS / CDC` · `Databricks / Delta Lake` · `Snowflake` · `dbt` · `Azure Data Engineering`
 
 ## Supporting / historical work
 
@@ -93,7 +94,7 @@ Current practical study focuses on:
 ## About
 
 **Douglas Merelo**  
-Senior Data Engineer | AWS | Python | SQL | ETL/ELT | Data Pipelines | Cloud Architecture
+Data Engineer | AWS (Glue · Redshift · Athena · Lambda) | PySpark · Airflow · Python · SQL | ETL/ELT
 
 - [LinkedIn](https://www.linkedin.com/in/douglas-merelo/)
 - [GitHub](https://github.com/dmerelo)

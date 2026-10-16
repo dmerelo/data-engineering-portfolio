@@ -121,7 +121,7 @@ Possible service mapping for this architecture:
 | --- | --- |
 | Object storage / landing | Amazon S3 |
 | Metadata/catalog | AWS Glue Data Catalog |
-| Transformation | AWS Glue / Python / SQL |
+| Transformation | AWS Glue (PySpark) / Python / SQL |
 | Event-driven processing | AWS Lambda / EventBridge |
 | Analytical query over lake | Amazon Athena |
 | Relational serving | Amazon Aurora PostgreSQL |
@@ -131,7 +131,7 @@ Possible service mapping for this architecture:
 
 The exact service choice depends on latency, data volume, transformation complexity and consumption pattern.
 
-## Senior-level design questions
+## Design questions
 
 Before implementing, answer:
 

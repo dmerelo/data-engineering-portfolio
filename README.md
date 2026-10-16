@@ -1,10 +1,10 @@
 # Data Engineering Portfolio — Douglas Merelo
 
-[![CI](https://github.com/dmerelo/meu-portifolio-de-dados/actions/workflows/ci.yml/badge.svg)](https://github.com/dmerelo/meu-portifolio-de-dados/actions/workflows/ci.yml)
+[![CI](https://github.com/dmerelo/data-engineering-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/dmerelo/data-engineering-portfolio/actions/workflows/ci.yml)
 
 Portfolio focused on **Data Engineering, AWS, Python, SQL, ETL/ELT, data pipelines, performance and cloud architecture**.
 
-My strongest production experience is with **AWS, PySpark, Python, SQL and Airflow**. Projects involving Databricks, Snowflake, dbt and Azure are clearly identified as hands-on/reference labs rather than previous production experience.
+My strongest production experience is with **AWS, PySpark, Python, SQL and Airflow**. Study labs in other stacks (Databricks, Snowflake/dbt, Azure) stay in [`projects/`](./projects/) as hands-on references and are not part of the featured work.
 
 ## Selected professional impact
 
@@ -20,9 +20,6 @@ My strongest production experience is with **AWS, PySpark, Python, SQL and Airfl
 |---|---|---|
 | [AWS Incremental Data Pipeline](./projects/aws-incremental-data-pipeline/) | AWS, PySpark, Airflow, Python, SQL, incremental, watermark, idempotency | **Flagship** — architecture, reprocessing, data quality, observability, performance and cloud cost |
 | [AWS Redshift + DMS Modernization](./projects/aws-redshift-dms-modernization/) | Redshift, DMS, CDC, S3, SQL | Full load + CDC, OLTP → OLAP separation, migration validation and cutover thinking |
-| [Databricks + PySpark Lakehouse](./projects/databricks-pyspark-lakehouse/) | PySpark, Delta concepts, Medallion | Bronze/Silver/Gold, deduplication, incremental processing, Spark performance and CI |
-| [Snowflake + dbt Analytics Engineering](./projects/snowflake-dbt-analytics-engineering/) | Snowflake, dbt, SQL | Staging/intermediate/marts, tests, snapshots, incremental models and lineage-oriented structure |
-| [Azure Data Engineering Platform](./projects/azure-data-engineering-platform/) | ADF, ADLS Gen2, Databricks, Key Vault | Transfer of core Data Engineering principles from AWS to Azure |
 
 ## Production-inspired flagship
 

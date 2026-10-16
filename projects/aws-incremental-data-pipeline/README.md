@@ -202,6 +202,45 @@ Tests cover:
 - idempotent replay;
 - watermark advancement.
 
+## Orchestration with Airflow
+
+The pipeline is orchestrated by an Airflow DAG: [`dags/incremental_customers_dag.py`](./dags/incremental_customers_dag.py).
+
+```text
+read_watermark >> run_incremental_batch >> quality_gate >> publish_target >> commit_watermark
+```
+
+| Task | What it does | Safe to retry? |
+| --- | --- | --- |
+| `read_watermark` | Reads the last committed watermark (default on first run) | Yes |
+| `run_incremental_batch` | Selects, deduplicates and merges the batch into a **staging** copy of the target | Yes, the published target is untouched |
+| `quality_gate` | Blocks on duplicate keys, reconciliation mismatch or a shrinking target | Yes |
+| `publish_target` | Swaps staging into the published target with an atomic rename | Yes |
+| `commit_watermark` | Persists the new watermark atomically, **only after publication** | Yes |
+
+DAG settings and why:
+- `max_active_runs=1`: each run depends on the previous watermark, so runs must not overlap.
+- `catchup=False`: a run processes everything newer than the committed watermark, so missed schedules are recovered by the next run instead of a backfill.
+- Retries with exponential backoff on every task, because every task is idempotent.
+- Paths come from an environment variable, so parsing the DAG never queries the Airflow metadata database.
+
+Failure behavior is covered by [`tests/test_orchestration.py`](./tests/test_orchestration.py): a failed quality gate leaves the target and watermark untouched, a rerun after commit selects nothing, and a crash between publish and commit is recovered by a plain retry.
+
+In the AWS version, `run_incremental_batch` becomes a Glue job (PySpark) started with `GlueJobOperator`, and the files live in S3. Task boundaries and the commit rule stay the same.
+
+### Run the DAG locally
+
+```bash
+pip install "apache-airflow==2.10.5" --constraint \
+  https://raw.githubusercontent.com/apache/airflow/constraints-2.10.5/constraints-3.11.txt
+export AIRFLOW__CORE__DAGS_FOLDER=projects/aws-incremental-data-pipeline/dags
+export INCREMENTAL_CUSTOMERS_DATA_DIR=/tmp/incremental_customers
+airflow db migrate
+airflow dags test incremental_customers 2026-10-16
+```
+
+The DAG reads `incremental_batch.csv` from that folder and writes `curated/customers.csv` and `state/watermark.json`. Copy the generated CSVs there first (`full_snapshot.csv` goes to `curated/customers.csv`).
+
 ## Reprocessing and operations
 
 A resilient pipeline must support reprocessing one logical batch without rebuilding all history.
@@ -227,16 +266,21 @@ aws-incremental-data-pipeline/
 ├── README.md
 ├── architecture.md
 ├── data/                         # generated synthetic data
+├── dags/
+│   └── incremental_customers_dag.py
 ├── docs/
 │   ├── before-after.md
 │   └── operations-runbook.md
 ├── src/
 │   ├── generate_sample_data.py
-│   └── incremental_pipeline.py
+│   ├── incremental_pipeline.py
+│   └── orchestration.py
 ├── sql/
 │   └── incremental_upsert.sql
 └── tests/
-    └── test_incremental_pipeline.py
+    ├── test_dag_integrity.py
+    ├── test_incremental_pipeline.py
+    └── test_orchestration.py
 ```
 
 ## Design trade-offs
@@ -274,6 +318,9 @@ It requires explicit decisions about:
 - [`docs/operations-runbook.md`](./docs/operations-runbook.md) — operational recovery and replay strategy
 - [`src/generate_sample_data.py`](./src/generate_sample_data.py) — reproducible synthetic dataset
 - [`src/incremental_pipeline.py`](./src/incremental_pipeline.py) — executable incremental processing example
+- [`src/orchestration.py`](./src/orchestration.py) — task logic used by the DAG (watermark state, staging, quality gate, publish)
+- [`dags/incremental_customers_dag.py`](./dags/incremental_customers_dag.py) — Airflow DAG
+- [`tests/test_orchestration.py`](./tests/test_orchestration.py) — failure, retry and replay behavior of the DAG steps
 - [`tests/test_incremental_pipeline.py`](./tests/test_incremental_pipeline.py) — tests for selection, deduplication, idempotency and watermark behavior
 - [`sql/incremental_upsert.sql`](./sql/incremental_upsert.sql) — SQL merge/upsert reference
 
@@ -281,4 +328,4 @@ It requires explicit decisions about:
 
 This project is designed to demonstrate Data Engineering reasoning around:
 
-`AWS` · `incremental processing` · `watermarks` · `idempotency` · `partitioning` · `data quality` · `observability` · `reprocessing` · `performance` · `cloud cost` · `failure recovery` · `trade-offs`
+`AWS` · `Airflow` · `incremental processing` · `watermarks` · `idempotency` · `partitioning` · `data quality` · `observability` · `reprocessing` · `performance` · `cloud cost` · `failure recovery` · `trade-offs`

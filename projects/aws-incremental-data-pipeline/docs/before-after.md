@@ -14,7 +14,7 @@ Characteristics:
 - failures were more expensive because reruns repeated large portions of work.
 
 Observed production context:
-- processing windows were approximately 4–6 hours;
+- processing windows were approximately 4–6 hours, reaching up to 8 hours at peak;
 - the environment supported about 20 pipelines and millions of records.
 
 ## After: incremental processing

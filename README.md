@@ -18,7 +18,7 @@ My strongest production experience is with **AWS, PySpark, Python, SQL and Airfl
 
 | Project | Stack / Concepts | What it demonstrates |
 |---|---|---|
-| [AWS Incremental Data Pipeline](./projects/aws-incremental-data-pipeline/) | AWS, Python, SQL, incremental, watermark, idempotency | **Flagship** — architecture, reprocessing, data quality, observability, performance and cloud cost |
+| [AWS Incremental Data Pipeline](./projects/aws-incremental-data-pipeline/) | AWS, Airflow, Python, SQL, incremental, watermark, idempotency | **Flagship** — architecture, reprocessing, data quality, observability, performance and cloud cost |
 | [AWS Redshift + DMS Modernization](./projects/aws-redshift-dms-modernization/) | Redshift, DMS, CDC, S3, SQL | Full load + CDC, OLTP → OLAP separation, migration validation and cutover thinking |
 | [Databricks + PySpark Lakehouse](./projects/databricks-pyspark-lakehouse/) | PySpark, Delta concepts, Medallion | Bronze/Silver/Gold, deduplication, incremental processing, Spark performance and CI |
 | [Snowflake + dbt Analytics Engineering](./projects/snowflake-dbt-analytics-engineering/) | Snowflake, dbt, SQL | Staging/intermediate/marts, tests, snapshots, incremental models and lineage-oriented structure |
@@ -33,6 +33,7 @@ The flagship is the closest public representation of the type of problem I have 
 It includes:
 - synthetic reproducible dataset;
 - executable Python incremental pipeline;
+- Airflow DAG with a staging → quality gate → publish → commit-watermark flow;
 - input validation and blocking data-quality rules;
 - explicit watermark lifecycle;
 - deterministic deduplication and idempotent merge/upsert behavior;

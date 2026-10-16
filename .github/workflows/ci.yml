@@ -34,6 +34,7 @@ jobs:
         run: |
           ruff check projects/aws-incremental-data-pipeline/src/incremental_pipeline.py \
             projects/aws-incremental-data-pipeline/src/orchestration.py \
+            projects/aws-incremental-data-pipeline/glue \
             projects/aws-incremental-data-pipeline/dags \
             projects/aws-incremental-data-pipeline/tests
 
@@ -41,6 +42,7 @@ jobs:
         run: |
           ruff format --check projects/aws-incremental-data-pipeline/src/incremental_pipeline.py \
             projects/aws-incremental-data-pipeline/src/orchestration.py \
+            projects/aws-incremental-data-pipeline/glue \
             projects/aws-incremental-data-pipeline/dags \
             projects/aws-incremental-data-pipeline/tests
 

@@ -90,7 +90,7 @@ Recommended CloudWatch metrics/log fields:
 - runtime materially above recent baseline;
 - source/target reconciliation mismatch.
 
-## Senior-level principle
+## Core principle
 
 The pipeline should expose enough state that an operator can answer three questions quickly:
 

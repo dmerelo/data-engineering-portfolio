@@ -33,12 +33,16 @@ jobs:
       - name: Lint flagship code
         run: |
           ruff check projects/aws-incremental-data-pipeline/src/incremental_pipeline.py \
-            projects/aws-incremental-data-pipeline/tests/test_incremental_pipeline.py
+            projects/aws-incremental-data-pipeline/src/orchestration.py \
+            projects/aws-incremental-data-pipeline/dags \
+            projects/aws-incremental-data-pipeline/tests
 
       - name: Check flagship formatting
         run: |
           ruff format --check projects/aws-incremental-data-pipeline/src/incremental_pipeline.py \
-            projects/aws-incremental-data-pipeline/tests/test_incremental_pipeline.py
+            projects/aws-incremental-data-pipeline/src/orchestration.py \
+            projects/aws-incremental-data-pipeline/dags \
+            projects/aws-incremental-data-pipeline/tests
 
       - name: Run tests
         run: pytest -q
